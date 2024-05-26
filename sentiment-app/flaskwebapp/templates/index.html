@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Analysis App</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <img src="{{ url_for('static', filename='azure.svg') }}" class="icon" alt="App Icon">
+    <h2>Sentiment Analysis</h2>
+    <form id="textForm">
+        <textarea name="text" placeholder="Enter text here..."></textarea>
+        <button type="submit">Analyze</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('textForm').onsubmit = async function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            let response = await fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            });
+            let resultData = await response.json();
+    
+            let results = resultData.results;
+            if (results) {
+                let displayText = `Document: ${results.document}\nSentiment: ${results.overall_sentiment}\n`;
+                displayText += `Confidence - Positive: ${results.confidence_positive}, Neutral: ${results.confidence_neutral}, Negative: ${results.confidence_negative}`;
+                document.getElementById('result').innerText = displayText;
+            } else {
+                document.getElementById('result').innerText = 'No results to display';
+            }
+        };
+    </script>
+</body>
+</html>
